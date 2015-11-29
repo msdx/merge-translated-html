@@ -18,26 +18,23 @@ import java.util.Set;
  * @author Geek_Soledad (msdx.android@qq.com)
  */
 public class MergeHtml {
-    static File source = new File("./resources/source/sonar_runner_plugin.html");
-    static File target = new File("./resources/target/sonar_runner_plugin.html");
-
-    private static Set<String> MERGE_CHILE = new HashSet<>();
+    private static Set<String> MERGE_NODE_NAME = new HashSet<>();
     static {
-        MERGE_CHILE.add("html");
-        MERGE_CHILE.add("div");
-        MERGE_CHILE.add("head");
-        MERGE_CHILE.add("body");
-        MERGE_CHILE.add("table");
-        MERGE_CHILE.add("thead");
-        MERGE_CHILE.add("tbody");
-        MERGE_CHILE.add("tr");
-        MERGE_CHILE.add("td");
-        MERGE_CHILE.add("title");
-        MERGE_CHILE.add("a");
-        MERGE_CHILE.add("dl");
-        MERGE_CHILE.add("dt");
-        MERGE_CHILE.add("dd");
-        MERGE_CHILE.add("ul");
+        MERGE_NODE_NAME.add("html");
+        MERGE_NODE_NAME.add("div");
+        MERGE_NODE_NAME.add("head");
+        MERGE_NODE_NAME.add("body");
+        MERGE_NODE_NAME.add("table");
+        MERGE_NODE_NAME.add("thead");
+        MERGE_NODE_NAME.add("tbody");
+        MERGE_NODE_NAME.add("tr");
+        MERGE_NODE_NAME.add("td");
+        MERGE_NODE_NAME.add("title");
+        MERGE_NODE_NAME.add("a");
+        MERGE_NODE_NAME.add("dl");
+        MERGE_NODE_NAME.add("dt");
+        MERGE_NODE_NAME.add("dd");
+        MERGE_NODE_NAME.add("ul");
     }
 
     public static void main(String[] args) throws IOException {
@@ -146,7 +143,7 @@ public class MergeHtml {
     }
 
     private static boolean needMergeChild(String name) {
-        return MERGE_CHILE.contains(name);
+        return MERGE_NODE_NAME.contains(name);
     }
 
 }
