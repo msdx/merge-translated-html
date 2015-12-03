@@ -28,7 +28,6 @@ public class MergeHtml {
         MERGE_NODE_NAME.add("thead");
         MERGE_NODE_NAME.add("tbody");
         MERGE_NODE_NAME.add("tr");
-        MERGE_NODE_NAME.add("td");
         MERGE_NODE_NAME.add("title");
         MERGE_NODE_NAME.add("a");
         MERGE_NODE_NAME.add("dl");
@@ -136,7 +135,7 @@ public class MergeHtml {
     }
 
     private static void mergeParagraph(Element source, Element target) {
-        if (!target.text().equalsIgnoreCase(source.text())) {
+        if (!target.html().equalsIgnoreCase(source.html())) {
             target.append("<br/>");
             target.append(source.html());
         }
