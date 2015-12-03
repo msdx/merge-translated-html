@@ -49,7 +49,7 @@ public class MergeHtml {
         File sourcesFolder = new File(workDir, "source");
         File targetFolder = new File(workDir, "target");
 
-        if(!sourcesFolder.exists() || targetFolder.exists()) {
+        if(!sourcesFolder.exists() || !targetFolder.exists()) {
             System.out.println(sourcesFolder.getPath() + " or " + targetFolder.getPath() + " is not exist.");
             return;
         }
