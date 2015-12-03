@@ -18,7 +18,7 @@ import java.util.Set;
  * @author Geek_Soledad (msdx.android@qq.com)
  */
 public class MergeHtml {
-    private static Set<String> MERGE_NODE_NAME = new HashSet<>();
+    private static Set<String> MERGE_NODE_NAME = new HashSet<String>();
     static {
         MERGE_NODE_NAME.add("html");
         MERGE_NODE_NAME.add("div");
@@ -40,12 +40,20 @@ public class MergeHtml {
     public static void main(String[] args) throws IOException {
         File workDir;
         if(args.length < 1) {
-            workDir = new File("./resources/");
+//            workDir = new File("./resources/");
+            System.out.println("java -jar merge-translated-html.jar [path]");
+            return;
         } else {
             workDir = new File(args[0]);
         }
         File sourcesFolder = new File(workDir, "source");
         File targetFolder = new File(workDir, "target");
+
+        if(!sourcesFolder.exists() || targetFolder.exists()) {
+            System.out.println(sourcesFolder.getPath() + " or " + targetFolder.getPath() + " is not exist.");
+            return;
+        }
+
         File outputFolder = new File(workDir, "output");
         if(!outputFolder.exists()) {
             outputFolder.mkdirs();
