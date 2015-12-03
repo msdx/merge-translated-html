@@ -111,8 +111,10 @@ public class MergeHtml {
             } else if ("title".equalsIgnoreCase(nodeName)) {
                 mergeText(source, target);
             } else if ("dt".equalsIgnoreCase(nodeName)) {
-                mergeText(source, target);
+                mergeParagraph(source, target);
             } else if("li".equalsIgnoreCase(nodeName)) {
+                mergeParagraph(source, target);
+            } else if("span".equalsIgnoreCase(nodeName)) {
                 mergeParagraph(source, target);
             }
         }
