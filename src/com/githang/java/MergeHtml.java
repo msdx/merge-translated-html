@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Geek_Soledad (msdx.android@qq.com)
  */
 public class MergeHtml {
+    private static final Pattern CONTENT_PATTERN = Pattern.compile("(\\d+\\.)+(.*+)");
     private static Set<String> MERGE_NODE_NAME = new HashSet<String>();
     static {
         MERGE_NODE_NAME.add("html");
@@ -114,13 +117,14 @@ public class MergeHtml {
             } else if("li".equalsIgnoreCase(nodeName)) {
                 mergeParagraph(source, target);
             } else if("span".equalsIgnoreCase(nodeName)) {
-                mergeParagraph(source, target);
+                String attr = target.attr("class");
+                if ("chapter".equalsIgnoreCase(attr) || "section".equalsIgnoreCase(attr)) {
+                    mergeContents(source, target);
+                } else {
+                    mergeParagraph(source, target);
+                }
             }
         }
-    }
-
-    private static void mergeNav(Element source, Element target) {
-
     }
 
     private static void mergeHeading(Element source, Element target, String nodeName) {
@@ -132,6 +136,19 @@ public class MergeHtml {
             newElem.attr(attr.getKey(), attr.getValue());
         }
         newElem.append(source.html());
+    }
+
+    /**
+     * 合并目录
+     */
+    private static void mergeContents(Element source, Element target) {
+        final String sourceText = source.text();
+        if (!target.html().equalsIgnoreCase(source.html()) ) {
+            Matcher matcher = CONTENT_PATTERN.matcher(sourceText);
+            if (matcher.find()) {
+                target.child(0).appendText(" -" + matcher.group(2));
+            }
+        }
     }
 
     private static void mergeParagraph(Element source, Element target) {
