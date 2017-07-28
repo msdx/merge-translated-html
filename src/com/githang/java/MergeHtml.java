@@ -153,7 +153,9 @@ public class MergeHtml {
 
     private static void mergeParagraph(Element source, Element target) {
         if (!target.html().equalsIgnoreCase(source.html())) {
-            target.append("<br/>");
+            if (!"p".equals(target.childNode(0).nodeName()) || !"p".equals(source.childNode(0).nodeName())) {
+                target.append("<br/>");
+            }
             target.append(source.html());
         }
     }
