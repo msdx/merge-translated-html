@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 public class MergeHtml {
     private static final Pattern CONTENT_PATTERN = Pattern.compile("(\\d+\\.)+(.*+)");
     private static Set<String> MERGE_NODE_NAME = new HashSet<String>();
+
     static {
         MERGE_NODE_NAME.add("html");
         MERGE_NODE_NAME.add("div");
@@ -41,7 +42,7 @@ public class MergeHtml {
 
     public static void main(String[] args) throws IOException {
         File workDir;
-        if(args.length < 1) {
+        if (args.length < 1) {
 //            workDir = new File("./resources/");
             System.out.println("java -jar merge-translated-html.jar [path]");
             return;
@@ -51,13 +52,13 @@ public class MergeHtml {
         File sourcesFolder = new File(workDir, "source");
         File targetFolder = new File(workDir, "target");
 
-        if(!sourcesFolder.exists() || !targetFolder.exists()) {
+        if (!sourcesFolder.exists() || !targetFolder.exists()) {
             System.out.println(sourcesFolder.getPath() + " or " + targetFolder.getPath() + " is not exist.");
             return;
         }
 
         File outputFolder = new File(workDir, "output");
-        if(!outputFolder.exists()) {
+        if (!outputFolder.exists()) {
             outputFolder.mkdirs();
         }
         File[] targets = targetFolder.listFiles(new FilenameFilter() {
@@ -66,7 +67,7 @@ public class MergeHtml {
                 return name.endsWith(".html");
             }
         });
-        for(File target : targets) {
+        for (File target : targets) {
             File source = new File(sourcesFolder, target.getName());
 
             Document result = mergeFileContent(source, target);
@@ -90,18 +91,18 @@ public class MergeHtml {
 
     private static void merge(Elements source, Elements target) {
         int size = source.size();
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             merge(source.get(i), target.get(i));
         }
     }
 
     private static void merge(Element source, Element target) {
         String nodeName = target.nodeName();
-        if ( needMergeChild(nodeName) && target.children().size() > 0) {
+        if (needMergeChild(nodeName) && target.children().size() > 0) {
             merge(source.children(), target.children());
         } else {
             if ("p".equalsIgnoreCase(nodeName)) {
-                if("title".equals(target.attr("class"))) {
+                if ("title".equals(target.attr("class"))) {
                     mergeText(source.select("b").get(0), target.select("b").get(0));
                 } else {
                     mergeParagraph(source, target);
@@ -114,9 +115,9 @@ public class MergeHtml {
                 mergeText(source, target);
             } else if ("dt".equalsIgnoreCase(nodeName)) {
                 mergeParagraph(source, target);
-            } else if("li".equalsIgnoreCase(nodeName)) {
+            } else if ("li".equalsIgnoreCase(nodeName)) {
                 mergeParagraph(source, target);
-            } else if("span".equalsIgnoreCase(nodeName)) {
+            } else if ("span".equalsIgnoreCase(nodeName)) {
                 String attr = target.attr("class");
                 if ("chapter".equalsIgnoreCase(attr) || "section".equalsIgnoreCase(attr)) {
                     mergeContents(source, target);
@@ -131,7 +132,7 @@ public class MergeHtml {
         int level = Integer.valueOf(nodeName.substring(1, 2));
         Element newElem = target.parent().appendElement("h" + (level + 2));
         Iterator<Attribute> iterator = source.attributes().iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Attribute attr = iterator.next();
             newElem.attr(attr.getKey(), attr.getValue());
         }
@@ -143,7 +144,7 @@ public class MergeHtml {
      */
     private static void mergeContents(Element source, Element target) {
         final String sourceText = source.text();
-        if (!target.html().equalsIgnoreCase(source.html()) ) {
+        if (!target.html().equalsIgnoreCase(source.html())) {
             Matcher matcher = CONTENT_PATTERN.matcher(sourceText);
             if (matcher.find()) {
                 target.child(0).appendText(" -" + matcher.group(2));
@@ -153,7 +154,15 @@ public class MergeHtml {
 
     private static void mergeParagraph(Element source, Element target) {
         if (!target.html().equalsIgnoreCase(source.html())) {
-            if (!"p".equals(target.childNode(0).nodeName()) || !"p".equals(source.childNode(0).nodeName())) {
+            final String targetChildName = target.childNode(0).nodeName();
+            final String sourceChildName = source.childNode(0).nodeName();
+
+            if ("img".equalsIgnoreCase(targetChildName) && "img".equalsIgnoreCase(sourceChildName)) {
+                mergeImage(target.child(0), source.child(0));
+                return;
+            }
+
+            if (!"p".equals(targetChildName) || !"p".equals(sourceChildName)) {
                 target.append("<br/>");
             }
             target.append(source.html());
@@ -161,8 +170,16 @@ public class MergeHtml {
     }
 
     private static void mergeText(Element source, Element target) {
-        if(target.text().trim().length() > 0) {
+        if (target.text().trim().length() > 0) {
             target.append(" - ").append(source.html());
+        }
+    }
+
+    private static void mergeImage(Element source, Element target) {
+        final String targetAlt = target.attr("alt");
+        final String sourceAlt = source.attr("alt");
+        if (!targetAlt.equalsIgnoreCase(sourceAlt)) {
+            target.attr("alt", targetAlt + " - " + sourceAlt);
         }
     }
 
