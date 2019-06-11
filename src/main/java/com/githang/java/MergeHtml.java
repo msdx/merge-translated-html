@@ -68,8 +68,8 @@ public class MergeHtml {
             }
         });
         for (File target : targets) {
+            System.out.println("Start merge: " + target.getName());
             File source = new File(sourcesFolder, target.getName());
-
             Document result = mergeFileContent(source, target);
             System.out.println(result.html());
             File output = new File(outputFolder, target.getName());
